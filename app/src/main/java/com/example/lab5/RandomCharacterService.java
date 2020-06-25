@@ -73,7 +73,7 @@ public class RandomCharacterService extends Service {
     public void onDestroy() {
         super.onDestroy();
         stopRandomGenerator();
-        Log.i(TAG,"Service Destroyed.");
+        Log.i(TAG,"Service Destroyed...");
     }
 
     @Nullable
@@ -81,5 +81,11 @@ public class RandomCharacterService extends Service {
     public IBinder onBind(Intent intent) {
         Log.i(TAG, "In onBind ...");
         return myBinder;
+    }
+
+    @Override
+    public boolean onUnbind(Intent intent) {
+        Log.i(TAG, "In onUnbind...");
+        return super.onUnbind(intent);
     }
 }
