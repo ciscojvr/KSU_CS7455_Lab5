@@ -49,22 +49,22 @@ public class MainActivity extends AppCompatActivity {
 
         randomCharacterTextView = (TextView) findViewById(R.id.textView_randomCharacter);
 
+        serviceIntent = new Intent(getApplicationContext(), RandomCharacterService.class);
     }
 
     public void onClick(View view) {
         switch (view.getId()) {
             case R.id.button_startService:
-                serviceIntent = new Intent(getApplicationContext(), RandomCharacterService.class);
                 startService(serviceIntent);
                 break;
             case R.id.button_stopService:
                 stopService(serviceIntent);
                 break;
             case R.id.button_bindService:
-                bindMyService();
+                bindService();
                 break;
             case R.id.button_unbindService:
-                unbindMyService();
+                unbindService();
                 break;
             case R.id.button_getRandomCharacter:
                 setRandomCharacter();
@@ -72,7 +72,7 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    private void bindMyService() {
+    private void bindService() {
         if (myServiceConnection == null) {
             myServiceConnection = new ServiceConnection() {
                 @Override
@@ -88,11 +88,10 @@ public class MainActivity extends AppCompatActivity {
                 }
             };
         }
-
         bindService(serviceIntent, myServiceConnection, Context.BIND_AUTO_CREATE);
     }
 
-    private void unbindMyService() {
+    private void unbindService() {
         if (isServiceBound) {
             unbindService(myServiceConnection);
             isServiceBound = false;
