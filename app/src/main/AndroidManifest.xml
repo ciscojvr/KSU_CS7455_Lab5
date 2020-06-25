@@ -17,8 +17,7 @@
             </intent-filter>
         </activity>
 
-        <service android:name=".RandomCharacterService">
-
+        <service android:name=".RandomCharacterService" android:enabled="true">
         </service>
 
     </application>
