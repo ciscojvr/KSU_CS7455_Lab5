@@ -10,16 +10,31 @@ package com.example.lab5;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.content.ComponentName;
+import android.content.Context;
+import android.content.Intent;
+import android.content.ServiceConnection;
 import android.os.Bundle;
+import android.os.IBinder;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
+import android.widget.TextView;
 
 public class MainActivity extends AppCompatActivity {
-    Button startServiceButton;
-    Button stopServiceButton;
-    Button bindServiceButton;
-    Button unbindServiceButton;
-    Button getRandomNumberButton;
+    private final String TAG = "MainActivity";
+    private Button startServiceButton;
+    private Button stopServiceButton;
+    private Button bindServiceButton;
+    private Button unbindServiceButton;
+    private Button getRandomCharacterButton;
+    private TextView randomCharacterTextView;
+
+    private Intent serviceIntent;
+
+    private RandomCharacterService myService;
+    private boolean isServiceBound;
+    private ServiceConnection myServiceConnection;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -27,43 +42,68 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
 
         startServiceButton = (Button) findViewById(R.id.button_startService);
-        startServiceButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-
-            }
-        });
-
         stopServiceButton = (Button) findViewById(R.id.button_stopService);
-        stopServiceButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-
-            }
-        });
-
         bindServiceButton = (Button) findViewById(R.id.button_bindService);
-        bindServiceButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-
-            }
-        });
-
         unbindServiceButton = (Button) findViewById(R.id.button_unbindService);
-        unbindServiceButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
+        getRandomCharacterButton = (Button) findViewById(R.id.button_getRandomCharacter);
 
-            }
-        });
+        randomCharacterTextView = (TextView) findViewById(R.id.textView_randomCharacter);
 
-        getRandomNumberButton = (Button) findViewById(R.id.button_getRandomNumber);
-        getRandomNumberButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
+    }
 
-            }
-        });
+    public void onClick(View view) {
+        switch (view.getId()) {
+            case R.id.button_startService:
+                serviceIntent = new Intent(getApplicationContext(), RandomCharacterService.class);
+                startService(serviceIntent);
+                break;
+            case R.id.button_stopService:
+                stopService(serviceIntent);
+                break;
+            case R.id.button_bindService:
+                bindMyService();
+                break;
+            case R.id.button_unbindService:
+                unbindMyService();
+                break;
+            case R.id.button_getRandomCharacter:
+                setRandomCharacter();
+                break;
+        }
+    }
+
+    private void bindMyService() {
+        if (myServiceConnection == null) {
+            myServiceConnection = new ServiceConnection() {
+                @Override
+                public void onServiceConnected(ComponentName name, IBinder iBinder) {
+                    RandomCharacterService.RandomCharacterServiceBinder myServiceBinder = (RandomCharacterService.RandomCharacterServiceBinder)iBinder;
+                    myService = myServiceBinder.getService();
+                    isServiceBound = true;
+                }
+
+                @Override
+                public void onServiceDisconnected(ComponentName componentName) {
+                    isServiceBound = false;
+                }
+            };
+        }
+
+        bindService(serviceIntent, myServiceConnection, Context.BIND_AUTO_CREATE);
+    }
+
+    private void unbindMyService() {
+        if (isServiceBound) {
+            unbindService(myServiceConnection);
+            isServiceBound = false;
+        }
+    }
+
+    private void setRandomCharacter() {
+        if (isServiceBound) {
+            randomCharacterTextView.setText("Random Character: " + myService.getRandomCharacter());
+        } else {
+            randomCharacterTextView.setText("Service is not bound.");
+        }
     }
 }
