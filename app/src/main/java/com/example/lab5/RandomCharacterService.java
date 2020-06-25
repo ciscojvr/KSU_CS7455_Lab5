@@ -37,6 +37,7 @@ public class RandomCharacterService extends Service {
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
+        Log.i(TAG, "Service started...");
         Log.i(TAG, "In OnStartCommand Thread ID is " + Thread.currentThread().getId());
         isRandomGeneratorOn = true;
 
